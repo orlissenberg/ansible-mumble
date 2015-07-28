@@ -36,7 +36,7 @@ ice="tcp -h 127.0.0.1 -p 6502"
 # You can set a plaintext "secret" on the Ice connection, and
 # any script attempting to access must then have this secret
 # (as context with name "secret").
-# Access is split in read (look only) and write (modify) 
+# Access is split in read (look only) and write (modify)
 # operations. Write access always includes read access,
 # unless read is explicitly denied (see note below).
 #
@@ -84,7 +84,7 @@ serverpassword={{ mumble_server_password }}
 bandwidth={{ mumble_max_bandwidth }}
 
 # Maximum number of concurrent clients allowed.
-users= {{ mumble_max_users }}
+users={{ mumble_max_users }}
 
 # Amount of users with Opus support needed to force Opus usage, in percent.
 # 0 = Always enable Opus, 100 = enable Opus if it's supported by all clients.

@@ -7,13 +7,13 @@
     force: yes
   notify: restart-mumble-server
 
-- name: Install Sqlite
+- name: Install sqlite
   apt: name={{ item }}
   with_items:
     - sqlite3
 
 - fail: msg="Admin password must be defined."
-  when: mumble_admin_password is undefined 
+  when: mumble_admin_password is undefined
         or mumble_admin_password|trim == ""
         or mumble_admin_password == none
 
@@ -24,6 +24,7 @@
   user: name={{ mumble_user_name }} group={{ mumble_user_name }}
 
 - template: src=mumble-server.ini.j2 dest=/etc/mumble-server.ini owner=root group={{ mumble_user_name }} mode=0640
+  notify: restart-mumble-server
 
 - shell: /usr/sbin/murmurd -ini /etc/mumble-server.ini -supw {{ mumble_admin_password }}
   notify: restart-mumble-server

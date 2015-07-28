@@ -1,5 +1,21 @@
 ---
 # tasks file for mumble
 
+- file: path={{ mumble_db_path }} state=absent
+  when: mumble_reset == true
+
 - include: main-apt.yml
   when: ansible_os_family == "Debian"
+
+# Restart to possibly create a new database.
+- name: restart-mumble-server
+  service: name=mumble-server state=restarted
+  when: mumble_revoke_self_register or mumble_channels|length > 0
+
+- shell: sqlite3 {{ mumble_db_path }} "update acl set revokepriv=524288, grantpriv=0 where group_name='all'"
+  when: mumble_revoke_self_register == true
+
+- shell: sqlite3 {{ mumble_db_path }} "insert or ignore into channels (server_id, channel_id, parent_id, name, inheritacl) values ({{ item.server_id }}, {{ item.id }}, {{ item.parent_id }}, '{{ item.name }}', 1);"
+  with_items: mumble_channels
+  notify: restart-mumble-server
+  when: mumble_channels|length > 0

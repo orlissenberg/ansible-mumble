@@ -13,15 +13,32 @@ EOF
 # Create group_vars for the webservers
 mkdir -p $TMP_DIR/group_vars 2> /dev/null
 cat << EOF > $TMP_DIR/group_vars/webservers
-mumble_admin_password: "testpass"
+mumble_admin_password: "test-admin"
 mumble_db_path: /var/lib/mumble-server/mumble-server.sqlite
 mumble_log_path: /var/log/mumble-server/mumble-server.log
 mumble_port: 64746
-mumble_server_password: "testserverpass"
+mumble_server_password: "test"
 mumble_max_bandwidth: 72000
 mumble_max_users: 10
 mumble_user_name: "mumble-server"
 mumble_welcome_text: "<br />Welcome to this server running <b>Murmur</b>.<br />"
+mumble_reset: true
+mumble_revoke_self_register: true
+
+mumble_channels:
+    - name: "Ingress"
+      id: 10
+      parent_id: 0
+      server_id: 1
+    - name: "The Lounge"
+      id: 12
+      parent_id: 0
+      server_id: 1
+    - name: "Enlightened"
+      id: 14
+      parent_id: 10
+      server_id: 1
+
 EOF
 
 # Create Ansible config
@@ -52,7 +69,7 @@ ansible-playbook $TMP_DIR/playbook.yml -i $TMP_DIR/hosts --syntax-check
 ansible-playbook $TMP_DIR/playbook.yml -i $TMP_DIR/hosts
 
 # Idempotence test
- ansible-playbook $TMP_DIR/playbook.yml -i $TMP_DIR/hosts | grep -q 'changed=0.*failed=0' \
+ ansible-playbook $TMP_DIR/playbook.yml -i $TMP_DIR/hosts | grep -q 'changed=6.*failed=0' \
  	&& (echo 'Idempotence test: pass' && exit 0) \
  	|| (echo 'Idempotence test: fail' && exit 1)
 

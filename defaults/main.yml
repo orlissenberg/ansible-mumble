@@ -2,6 +2,8 @@
 # defaults file for mumble
 
 mumble_admin_password: null
+mumble_reset: false
+mumble_revoke_self_register: false
 
 # ini settings
 mumble_db_path: /var/lib/mumble-server/mumble-server.sqlite
@@ -12,3 +14,6 @@ mumble_max_bandwidth: 72000
 mumble_max_users: 25
 mumble_user_name: "mumble-server"
 mumble_welcome_text: "<br />Welcome to this server running <b>Murmur</b>.<br />Enjoy your stay!<br />"
+
+# db
+mumble_channels: []

@@ -3,44 +3,65 @@ Ansible Mumble
 
 [http://mumble.info](http://mumble.info)
 
+[https://github.com/layeh/gumble](https://github.com/layeh/gumble)
+
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+...
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+See defaults/main.yml
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+Currently Debian only.
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+    ---
+    - hosts: webservers
+      gather_facts: yes
+      sudo: yes
 
-    - hosts: servers
       roles:
-         - { role: username.rolename, x: 42 }
+        - ansible-mumble
 
 License
 -------
 
-MITE
+MIT
 
 Notes
 -----
 
+A couple of Sqlite examples to manipulate or view mumble data.
+
+List mumble tables
+
 	sqlite3 /var/lib/mumble-server/mumble-server.sqlite .tables
+
+List mumble servers
 
     sudo sqlite3 -header /var/lib/mumble-server/mumble-server.sqlite "select * from servers"
 
+List mumble users
+
 	sudo sqlite3 -header /var/lib/mumble-server/mumble-server.sqlite "select * from users"
+
+List mumble groups
 
 	sudo sqlite3 -header /var/lib/mumble-server/mumble-server.sqlite "select * from groups"
 
+Revoke self register
+
+    sudo sqlite3 /var/lib/mumble-server/mumble-server.sqlite "update acl set revokepriv=524288, grantpriv=0 where group_name='all'"
+
+List revoked and granted privileges
+
+	sudo sqlite3 -header /var/lib/mumble-server/mumble-server.sqlite "select group_name, revokepriv, grantpriv from acl"
 

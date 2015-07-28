@@ -1,0 +1,14 @@
+---
+# defaults file for mumble
+
+mumble_admin_password: null
+
+# ini settings
+mumble_db_path: /var/lib/mumble-server/mumble-server.sqlite
+mumble_log_path: /var/log/mumble-server/mumble-server.log
+mumble_port: 64738
+mumble_server_password: ""
+mumble_max_bandwidth: 72000
+mumble_max_users: 25
+mumble_user_name: "mumble-server"
+mumble_welcome_text: "<br />Welcome to this server running <b>Murmur</b>.<br />Enjoy your stay!<br />"

@@ -12,6 +12,8 @@
   service: name=mumble-server state=restarted
   when: mumble_revoke_self_register or mumble_channels|length > 0
 
+- service: name=mumble-server state=stopped
+
 - shell: sqlite3 {{ mumble_db_path }} "update acl set revokepriv=524288, grantpriv=0 where group_name='all'"
   when: mumble_revoke_self_register == true
 
@@ -19,3 +21,5 @@
   with_items: mumble_channels
   notify: restart-mumble-server
   when: mumble_channels|length > 0
+
+- service: name=mumble-server state=restarted

@@ -2,17 +2,17 @@
 
 CURRENT_DIR=${PWD}
 TMP_DIR=/tmp/ansible-test
-mkdir -p $TMP_DIR 2> /dev/null
+mkdir -p ${TMP_DIR} 2> /dev/null
 
 # Create hosts inventory
-cat << EOF > $TMP_DIR/hosts
+cat << EOF > ${TMP_DIR}/hosts
 [webservers]
 localhost ansible_connection=local
 EOF
 
-# Create group_vars for the webservers
-mkdir -p $TMP_DIR/group_vars 2> /dev/null
-cat << EOF > $TMP_DIR/group_vars/webservers
+# Create group_vars for the web servers
+mkdir -p ${TMP_DIR}/group_vars 2> /dev/null
+cat << EOF > ${TMP_DIR}/group_vars/webservers
 mumble_admin_password: "test-admin"
 mumble_db_path: /var/lib/mumble-server/mumble-server.sqlite
 mumble_log_path: /var/log/mumble-server/mumble-server.log
@@ -42,35 +42,38 @@ mumble_channels:
 EOF
 
 # Create Ansible config
-cat << EOF > $TMP_DIR/ansible.cfg
+cat << EOF > ${TMP_DIR}/ansible.cfg
 [defaults]
-roles_path = $CURRENT_DIR/../
+roles_path = ${CURRENT_DIR}/../
 host_key_checking = False
 EOF
 
 # Create playbook.yml
-cat << EOF > $TMP_DIR/playbook.yml
+cat << EOF > ${TMP_DIR}/playbook.yml
 ---
 
 - hosts: webservers
   gather_facts: yes
-  sudo: yes
+  become: yes
 
   roles:
     - ansible-mumble
 EOF
 
-export ANSIBLE_CONFIG=$TMP_DIR/ansible.cfg
+export ANSIBLE_CONFIG=${TMP_DIR}/ansible.cfg
 
 # Syntax check
-ansible-playbook $TMP_DIR/playbook.yml -i $TMP_DIR/hosts --syntax-check
+ansible-playbook ${TMP_DIR}/playbook.yml -i ${TMP_DIR}/hosts --syntax-check
 
 # First run
-ansible-playbook $TMP_DIR/playbook.yml -i $TMP_DIR/hosts
+ansible-playbook ${TMP_DIR}/playbook.yml -i ${TMP_DIR}/hosts
+
+export ANSIBLE_CONFIG=/tmp/ansible-test/ansible.cfg
+ansible-playbook /tmp/ansible-test/playbook.yml -i /tmp/ansible-test/hosts | grep -q 'changed=8.*failed=0'
 
 # Idempotence test
- ansible-playbook $TMP_DIR/playbook.yml -i $TMP_DIR/hosts | grep -q 'changed=6.*failed=0' \
- 	&& (echo 'Idempotence test: pass' && exit 0) \
- 	|| (echo 'Idempotence test: fail' && exit 1)
+ansible-playbook ${TMP_DIR}/playbook.yml -i ${TMP_DIR}/hosts | grep -q 'changed=8.*failed=0' \
+  && (echo 'Idempotence test: pass' && exit 0) \
+  || (echo 'Idempotence test: fail' && exit 1)
 
 # netstat -tulpn | grep 64746

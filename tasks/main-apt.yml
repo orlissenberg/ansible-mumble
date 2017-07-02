@@ -1,6 +1,6 @@
 ---
 
-- name: Install
+- name: Install mumble server via apt
   apt: name=mumble-server
   args:
     state: present
@@ -23,8 +23,10 @@
 - name: Create mumble server user
   user: name={{ mumble_user_name }} group={{ mumble_user_name }}
 
-- template: src=mumble-server.ini.j2 dest=/etc/mumble-server.ini owner=root group={{ mumble_user_name }} mode=0640
+- name: Create mumble config file
+  template: src=mumble-server.ini.j2 dest=/etc/mumble-server.ini owner=root group={{ mumble_user_name }} mode=0640
   notify: restart-mumble-server
 
-- shell: /usr/sbin/murmurd -ini /etc/mumble-server.ini -supw {{ mumble_admin_password }}
+- name: Set admin password
+  shell: /usr/sbin/murmurd -ini /etc/mumble-server.ini -supw {{ mumble_admin_password }}
   notify: restart-mumble-server
